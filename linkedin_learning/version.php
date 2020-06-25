@@ -26,3 +26,13 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2020062000;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2019051100;        // Requires this Moodle version
 $plugin->component = 'block_linkedin_learning'; // Full name of the plugin (used for diagnostics)
+
+
+
+
+
+
+/* @error_reporting(E_ALL | E_STRICT);   // NOT FOR PRODUCTION SERVERS!
+@ini_set('display_errors', '1');         // NOT FOR PRODUCTION SERVERS!
+$CFG->debug = (E_ALL | E_STRICT);   // === DEBUG_DEVELOPER - NOT FOR PRODUCTION SERVERS!
+$CFG->debugdisplay = 1;              // NOT FOR PRODUCTION SERVERS! */
