@@ -29,7 +29,9 @@ if ($ADMIN->fulltree) {
                                                 get_string('linkedin_setting_description', 'block_linkedin_learning')
                                             ));
 
-    $settings->add(new admin_setting_configtext('linkedin_access_token_url', new lang_string('linkedin_access_token_url', 'block_linkedin_learning'),'','',PARAM_ALPHANUMEXT));
     $settings->add(new admin_setting_configtext('linkedin_client_id', new lang_string('linkedin_client_id', 'block_linkedin_learning'),'','',PARAM_ALPHANUMEXT));
     $settings->add(new admin_setting_configtext('linkedin_client_secret', new lang_string('linkedin_client_secret', 'block_linkedin_learning'),'','',PARAM_ALPHANUMEXT));
+	
+	$options = array(1 => 'Once in a Day', 2 => 'Once in a week', 3 => 'Once in a month');
+    $settings->add(new admin_setting_configselect('linkedin_cron_run', new lang_string('linkedin_cron_title', 'block_linkedin_learning'),new lang_string('linkedin_cron_description', 'block_linkedin_learning'), 0, $options));
 }

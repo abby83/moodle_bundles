@@ -1,0 +1,34 @@
+/** LinkedIn course block CSS **/
+.linkedin-blocks {
+    border: 1px solid #848282;
+    width: 252px;
+    margin: 21px;
+}
+.row-first img {
+    position: relative;
+}
+.row-second {
+    margin: 5px;
+}
+.row-second h2 {
+    font-size: 22px;
+    font-weight: 400;
+    width: 250px;
+    /* border: 1px solid; */
+    height: 30px;
+    overflow: hidden;
+    /* margin: 3px; */
+}
+
+.course_time {
+    position: absolute;
+    top: 208px;
+    left: 233px;
+    border: 1px solid #000;
+    width: 56px;
+    /* margin: 0px; */
+    text-align: center;
+    font-size: 14px;
+    background-color: #000;
+    color: #e2d6d6;
+}

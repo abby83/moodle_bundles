@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/linkedin_learning/db" VERSION="2020003" COMMENT="XMLDB file for Moodle blocks/linkedin_learning"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+	<TABLE NAME="linkedin_learning_courses" COMMENT="Accounts linked to a users Moodle account.">
+		<FIELDS>
+			<FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true"/>
+			<FIELD NAME="urn" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="LinkedIn Learning course URN or namespace to identify course metadata"/>
+			<FIELD NAME="title" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="LinkedIn Learning Course title"/>
+			<FIELD NAME="image" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="LinkedIn Learning Course Image link"/>
+			<FIELD NAME="shortdescription" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="author" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="language" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="country" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="courselevel" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="completiontime" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Total time required to complete the course(seconds)" />
+			<FIELD NAME="ssolaunchurl" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="weblaunchurl" TYPE="text" NOTNULL="false" />
+			<FIELD NAME="publishedate" TYPE="int" LENGTH="20" NOTNULL="false" COMMENT="Course published at LinkedIn Learning" />
+			<FIELD NAME="lastupdatedat" TYPE="int" LENGTH="20" NOTNULL="false" COMMENT="Course updated at LinkedIn Learning" />
+			
+		</FIELDS>
+		<KEYS>
+			<KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+		</KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

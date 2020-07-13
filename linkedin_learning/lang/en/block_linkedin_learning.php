@@ -17,14 +17,17 @@
 /**
  * Strings for component 'block_linkedin_learning', language 'en'
  *
- * @package   block_calendar_month
+ * @package   block_linkedin_learning
  * @copyright 2020 Walmart
  */
 
-$string['pluginname'] = 'LinkedIn Learning';
+$string['pluginname'] = 'Top Picks';
 
 $string['linkedin_setting_title'] = 'LinkedIn Learning API configuration';
 $string['linkedin_setting_description'] = 'Set API configuration for LinkedIn Learning admin settings';
 $string['linkedin_access_token_url'] = 'Access Token endpoints';
 $string['linkedin_client_id'] = 'Client ID';
 $string['linkedin_client_secret'] = 'Client Secret';
+$string['linkedin_cron_title'] = 'Cron Run Frequency';
+$string['linkedin_cron_description'] = 'It is the frequency at which cron job will execute to update popular courses from LinkedIn Learning'; 
+$string['linkedin_update_course'] = 'Cron job to Update LinkedIn Learning Courses into ULearn'; 

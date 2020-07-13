@@ -15,15 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- *
- * @package    block_linkedin_learning
- * @copyright  2020 Walmart
+ * @package   block_linkedin_learning
+ * @copyright 2020 Walmart
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2020062003;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2019051100;        // Requires this Moodle version
-$plugin->component = 'block_linkedin_learning'; // Full name of the plugin (used for diagnostics)
-$plugin->release = "1.2.0"; 
+$definitions = [
+    'linkedin_api' => [
+        'mode' => cache_store::MODE_APPLICATION
+    ]
+];

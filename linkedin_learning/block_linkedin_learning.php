@@ -44,10 +44,53 @@ class block_linkedin_learning extends block_base {
      * @return stdClass the content
      */
     public function get_content() {
-        global $CFG;
+        global $CFG, $OUTPUT;
+		
+		if ($this->content !== null) {
+            return $this->content;
+        }
+		$courses = $this->linkedin_courses();
+		$output = $OUTPUT->render_from_template('block_linkedin_learning/linkedin_courses',$courses);
+		
+		$this->content = new StdClass;
 
-        $this->content->text = "This test block for Linkedin Learning";
+        $this->content->text = $output;
         
         return $this->content;
     }
+	
+	/**
+	 * GET all course data from LinkedIn
+	 * 
+     * @output: array $params 
+     */
+	 public function linkedin_courses() : array {
+		 global $DB;
+		 $params = array();
+		 $sql = "SELECT id, urn, title, completiontime, 
+						TIME_FORMAT(SEC_TO_TIME(completiontime),'%kh %im') AS timeToCompelete, 
+						weblaunchurl, author, image, courselevel
+							FROM {linkedin_learning_courses}";
+		 $courses = $DB->get_records_sql($sql);
+		 if (count($courses) > 0) {
+			 $i = 0;
+			 foreach($courses AS $key => $val) {
+				$params['course'][$i]['title'] = $val->title;
+				
+				$totalTime_arr = explode(" ", $val->timetocompelete);
+				if ($totalTime_arr[0] == '0h') {
+					$params['course'][$i]['timetocompelete'] = $totalTime_arr[1];
+				} else {
+					$params['course'][$i]['timetocompelete'] = $val->timetocompelete;
+				}
+				
+				$params['course'][$i]['weblaunchurl'] = $val->weblaunchurl;
+				$params['course'][$i]['author'] = $val->author;
+				$params['course'][$i]['image'] = $val->image;
+				$params['course'][$i]['courselevel'] = $val->courselevel; 
+				$i++;
+			 }
+		 }
+		 return $params;
+	 }
 }
