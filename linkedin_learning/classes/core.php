@@ -94,22 +94,29 @@ class block_linkedin_learning_core {
 			
             if (is_string($response_json)){
                 $response = json_decode($response_json, true);
-                if (!isset($response['error']) && !isset($response['serviceErrorCode'])) {
+				
+                if (is_array($response) && !isset($response['error']) && !isset($response['serviceErrorCode'])) {
                     $accesstoken = isset($response['access_token'])?$response['access_token']:'';
                     $tokenexpiry = isset($response['expires_in'])?$response['expires_in']:0;
                     
                     $cache->set('accesstoken', $accesstoken);
                     $cache->set('expires_in', $tokenexpiry);
                     $cache->set('start_time', time());
-                } else {
+					
+                } elseif (isset($response['error']) || isset($response['serviceErrorCode']))  {
 					$error_message = isset($response['error']) ? $response['error_description'] : $response['message'];
                     error_log(date("m/d/Y h:i:s")."::".$error_message."\n", 3, self::LOG_PATH);
                     $accesstoken['error'] =  $error_message;
-                }
-
+					die();
+                } else {
+					error_log(date("m/d/Y h:i:s")."::".$response_json."\n", 3, self::LOG_PATH);
+                    $accesstoken['error'] =  $response_json;
+					die();
+				}
             } else {
                 error_log(date("m/d/Y h:i:s")."::Not a valid response for access token"."\n", 3, self::LOG_PATH);
                 $accesstoken['error'] =  "Not a valid response for access token";
+				die();
             }
         }
         
@@ -140,12 +147,12 @@ class block_linkedin_learning_core {
 	 /**
      * Collect Walmart Popular Courses URNs
      * @params: string $accesstoken
-     * @params: int $startAt 
+     * @params: $startAt 
      * @output: array $urn 
      */
-	public function get_course_urn(string $accesstoken, int $startAt) : array {
+	public function get_course_urn(string $accesstoken, $startAt) : array {
 		global $DB, $CFG;
-		$url = 'https://api.linkedin.com/v2/learningActivityReports?q=criteria&contentSource=EXTERNAL&timeOffset.unit=DAY&aggregationCriteria.primary=CONTENT&count=20&assetType=COURSE&startedAt='.$startAt.'&=&sortBy.engagementMetricQualifier=TOTAL&timeOffset.duration=1&sortBy.engagementMetricType=SECONDS_VIEWED';
+		$url = 'https://api.linkedin.com/v2/learningActivityReports?q=criteria&contentSource=EXTERNAL&timeOffset.unit=DAY&aggregationCriteria.primary=CONTENT&assetType=COURSE&startedAt='.$startAt.'&=&sortBy.engagementMetricQualifier=TOTAL&timeOffset.duration=1&sortBy.engagementMetricType=SECONDS_VIEWED';
 		$urns = array();
 		$courseurns = array();
 		$curl = new curl();
@@ -155,18 +162,23 @@ class block_linkedin_learning_core {
 		$response = json_decode($response_json, true);
 		
         if(isset($response['elements']) && count($response['elements'])) {
-			
+			$cntr = 0;
 			foreach ($response['elements'] AS $key => $val) {
-				$coursedata[] = [
-					'urn' => $val['contentDetails']['contentUrn'],
-					'title' => $val['contentDetails']['name'],
-				];
-				array_push($courseurns, $val['contentDetails']['contentUrn']); 
+				if ($val['contentDetails']['locale']['country'] == 'US' && $cntr <=19)  {
+					$cntr++;
+					$coursedata[] = [
+						'urn' => $val['contentDetails']['contentUrn'],
+						'title' => $val['contentDetails']['name'],
+					];
+					array_push($courseurns, $val['contentDetails']['contentUrn']); 
+				}
 			}
 			$DB->execute("TRUNCATE TABLE {".self::LINKEDIN_TABLE."}"); //flush all previous data.
 			$DB->insert_records(self::LINKEDIN_TABLE, $coursedata);
 			$urns = $courseurns;
-		} else {
+		} elseif($response == "") {
+			error_log(date("m/d/Y h:i:s").$response_json."\n", 3, self::LOG_PATH);
+		}else {
 			error_log(date("m/d/Y h:i:s")."::Empty course URN returned"."\n", 3, self::LOG_PATH);
 		}
 		return $urns;
