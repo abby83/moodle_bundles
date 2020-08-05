@@ -21,7 +21,8 @@
  * @copyright 2020 Walmart
  */
 
-$string['pluginname'] = 'Top Picks';
+
+$string['pluginname'] = 'Trending at Walmart by LinkedIn Learning';
 
 $string['linkedin_setting_title'] = 'LinkedIn Learning API configuration';
 $string['linkedin_setting_description'] = 'Set API configuration for LinkedIn Learning admin settings';
@@ -31,3 +32,5 @@ $string['linkedin_client_secret'] = 'Client Secret';
 $string['linkedin_cron_title'] = 'Cron Run Frequency';
 $string['linkedin_cron_description'] = 'It is the frequency at which cron job will execute to update popular courses from LinkedIn Learning'; 
 $string['linkedin_update_course'] = 'Cron job to Update LinkedIn Learning Courses into ULearn'; 
+$string['linkedin_client_carousel_title'] = 'Course Min. Limit'; 
+$string['linkedin_client_carousel_description'] = 'View all courses link will be available in the slider after minimum limit given by admin.'; 
