@@ -1,0 +1,41 @@
+<div id="linkedinbytopic" data-course-min-limit={{total_slider_course}}> 
+	<div class="linkedinpopularbytopic" total-course-count=5>
+		<div class="owl-courses owl-carousel owl-theme">
+			{{#course}}
+				<div class="span4">
+					<div class="course-box">
+						<div class="course-picture">
+							<span class="popular_course">POPULAR</span>
+							<img src="{{image}}" class="course-image img-responsive">
+							<span class="course_time">{{timetocompelete}}</span>
+						</div>
+						<div class="course-content">
+							<div class="course-details-box">
+								<div class="course-type">Course</div>
+								<div class="course_title">{{title}}</div>
+								<div class="meta-details">
+									<div class="assigned-by">
+										<div class="row1">
+											<div class="first">By:&nbsp;<span class="second">{{author}}</span></div>
+										 </div>
+										<div class="row2">
+										</div>
+									</div>
+								</div>
+							</div>
+							<hr>
+							<span class="start-btn">
+								<a href="{{ssolaunchurl}}" target="_blank" class="start-link">View<i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+							</span>
+						</div>
+					</div>
+				</div>
+			{{/course}}
+		</div>
+	</div>
+</div>
+<a href="https://www.linkedin.com/learning/me?u=26192810" target="_blank">
+	<div class="view-all-courses">
+		<span class="linkedin_viewall">View All</span>
+	</div>
+</a>

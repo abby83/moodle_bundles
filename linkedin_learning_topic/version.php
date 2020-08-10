@@ -17,13 +17,16 @@
 /**
  * Version details
  *
- * @package    block_linkedin_learning
+ * @package    block_linkedin_learning_topic
  * @copyright  2020 Walmart
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020062004;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2020080603;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2019051100;        // Requires this Moodle version
-$plugin->component = 'block_linkedin_learning'; // Full name of the plugin (used for diagnostics)
-$plugin->release = "1.2.0"; 
+$plugin->component = 'block_linkedin_learning_topic'; // Full name of the plugin (used for diagnostics)
+$plugin->dependencies = array(
+    'block_linkedin_learning' => ANY_VERSION,   
+);
+$plugin->release = "1.0.0"; 

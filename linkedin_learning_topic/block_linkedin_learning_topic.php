@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Handles displaying the calendar block.
+ * Display LinkedIn Learning Topic wise courses.
  *
- * @package    block_linkedin_learning
+ * @package    block_linkedin_learning_topic
  * @copyright  2020 Walmart
  */
 
-class block_linkedin_learning extends block_base {
+class block_linkedin_learning_topic extends block_base {
 	
 	protected const HOUSER  = 'General Office';
 
@@ -29,7 +29,7 @@ class block_linkedin_learning extends block_base {
      * Initialise the block.
      */
     public function init() {
-        $this->title = get_string('pluginname', 'block_linkedin_learning');
+        $this->title = get_string('pluginname', 'block_linkedin_learning_topic');
     }
 	
 	/**
@@ -45,7 +45,7 @@ class block_linkedin_learning extends block_base {
      * Enable blocks settings file
      */
     function has_config() {
-        return true;
+        return false;
     }
 
 
@@ -67,8 +67,8 @@ class block_linkedin_learning extends block_base {
 		$houser = $DB->get_record('custom_fields', $condition, 'store_type_description');
 		if($houser->store_type_description == self::HOUSER || is_siteadmin()) {
 			
-			$courses = $this->linkedin_courses();
-			$content = $OUTPUT->render_from_template('block_linkedin_learning/linkedin_courses',$courses);
+			$courses = $this->linkedin_topic_wise_courses();
+			$content = $OUTPUT->render_from_template('block_linkedin_learning_topic/linkedin_topic_courses',$courses);
 			$this->content->text = $content;
 			
 		} else {
@@ -83,7 +83,7 @@ class block_linkedin_learning extends block_base {
 	 * 
      * @output: array $params 
      */
-	 public function linkedin_courses() : array {
+	 public function linkedin_topic_wise_courses() : array {
 		 global $DB, $CFG;
 		 $params = array();
 		 $limit = $CFG->linkedin_client_carousel > 0?$CFG->linkedin_client_carousel:4;
@@ -91,7 +91,7 @@ class block_linkedin_learning extends block_base {
 		 $sql = "SELECT id, urn, title, completiontime, 
 						TIME_FORMAT(SEC_TO_TIME(completiontime),'%kh %im') AS timeToCompelete, 
 						weblaunchurl, ssolaunchurl, author, image, courselevel
-							FROM {linkedin_learning_courses} WHERE is_topic_course=0";
+							FROM {linkedin_learning_courses} WHERE is_topic_course=1";
 		 $courses = $DB->get_records_sql($sql, null, 0, $limit);
 		 if (count($courses) > 0) {
 			 $i = 0;

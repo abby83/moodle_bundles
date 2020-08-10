@@ -42,7 +42,6 @@ class block_linkedin_learning_core {
         $response = $this->accesstoken_generator($this->clientid, $this->clientsecrect);
         if (is_string($response)) {
             $this->accesstoken = $response;
-            $this->get_course();
         }
         
 	}
@@ -124,18 +123,38 @@ class block_linkedin_learning_core {
     }
     
     /**
-     * Get LinkedIn Learning Walmart Courses
-     * @params: string $clientid, string $clientsecrect
+     * Get LinkedIn Learning Walmart Trending Popular Courses
      * @output: string $accesstoken 
      */
-	public function get_course() {
+	public function get_popular_courses() {
 		global $CFG;
-		
 		if(!empty($this->accesstoken) && is_string($this->accesstoken)) {
 			$startAt = (mktime(0, 0, 0, date('m'), date('d')-7, date('y')))*1000;
 			$urns = $this->get_course_urn($this->accesstoken, $startAt); //Collect 20 popular Course URNs
 			if(count($urns) > 0) {
 				$this->update_course_metadata($this->accesstoken, $urns);
+			} else {
+				error_log(date("m/d/Y h:i:s")."::Empty course URN returns"."\n", 3, self::LOG_PATH);
+			}
+		} else {
+			error_log(date("m/d/Y h:i:s")."::Invalid or empty access token"."\n", 3, self::LOG_PATH);
+		}
+    }
+	
+	
+	 /**
+     * Get LinkedIn Learning Topic wise Popular Courses
+     * @params: string $topic
+     * @output: string $accesstoken 
+     */
+	public function get_topic_popular_courses(string $topic) {
+		global $CFG;
+		
+		if(!empty($this->accesstoken) && is_string($this->accesstoken) && !empty($topic)) {
+			$topicurn = $this->get_topic_urn($this->accesstoken, $topic);
+			if(!empty($topicurn)) {
+				$this->update_courses_by_topic($this->accesstoken, $topicurn);
+
 			} else {
 				error_log(date("m/d/Y h:i:s")."::Empty course URN returns"."\n", 3, self::LOG_PATH);
 			}
@@ -169,6 +188,7 @@ class block_linkedin_learning_core {
 					$coursedata[] = [
 						'urn' => $val['contentDetails']['contentUrn'],
 						'title' => $val['contentDetails']['name'],
+						'is_topic_course' => 0,
 					];
 					array_push($courseurns, $val['contentDetails']['contentUrn']); 
 				}
@@ -184,6 +204,39 @@ class block_linkedin_learning_core {
 		return $urns;
 		
 	}
+	
+	/**
+     * Collect Topic /classification URNs
+     * @params: string $accesstoken
+     * @params: $topic 
+     * @output: string $urn 
+     */
+	public function get_topic_urn(string $accesstoken, string $topic) : string {
+		$url = 'https://api.linkedin.com/v2/learningClassifications?q=keyword&keyword='.$topic.'&fields=urn';
+		$urns = array();
+		$courseurns = array();
+		$curl = new curl();
+		$topicurn = "";
+		
+		$curl->setHeader('Authorization: Bearer '.$accesstoken);
+        $response_json = $curl->get($url);
+		$response = json_decode($response_json, true);
+		
+		if(isset($response['elements']) && count($response['elements'])) {
+			foreach ($response['elements'] AS $key => $val) {
+				$topicurn = $val['urn'];
+			}
+			
+		} elseif($response == "") {
+			error_log(date("m/d/Y h:i:s").$response_json."\n", 3, self::LOG_PATH);
+		}else {
+			error_log(date("m/d/Y h:i:s")."::Empty topic URN returned"."\n", 3, self::LOG_PATH);
+		}
+		
+		return $topicurn;
+	}
+	
+	
 	
 	 /**
      * Collect Popular course images
@@ -224,10 +277,59 @@ class block_linkedin_learning_core {
 								'author' => $response['details']['contributors'][0]['authorDetails']['firstName']['value']." ".$response['details']['contributors'][0]['authorDetails']['lastName']['value'],
 								'urn' => $urn);
 				$response = $DB->execute($updatesql, $params);
-				file_put_contents(self::LOG_PATH, date("m/d/Y h:i:s")."::Cron job executed and updated course - ".$urn."\n", FILE_APPEND);
+				//file_put_contents(self::LOG_PATH, date("m/d/Y h:i:s")."::Cron job executed and updated course - ".$urn."\n", FILE_APPEND);
 			} else {
 				error_log(date("m/d/Y h:i:s")."::".$response['message']."\n", 3, self::LOG_PATH);
 			}
 		}
     }
+	
+	/**
+     * Collect Popular courses by selected topic
+     * @params: string $accesstoken
+     * @params: string $urn
+     * @output: bool $urn 
+     */
+	public function update_courses_by_topic(string $accesstoken,  string $urn) {
+		global $DB, $CFG;
+		
+		$url = 'https://api.linkedin.com/v2/learningAssets?q=criteria&count=20&assetFilteringCriteria.classifications[0]='.$urn.'&assetFilteringCriteria.assetTypes[0]=COURSE&assetPresentationCriteria.sortBy=POPULARITY';;
+		$curl = new curl();
+		$curl->setHeader('Authorization: Bearer '.$accesstoken);
+		$response_json = $curl->get($url);
+		$response = json_decode($response_json, true);
+		$coursedata = array();
+		
+		if(!isset($response['message'])) {
+			if (count($response['elements']) > 0) {
+				foreach ($response['elements'] AS $cKey => $cVal) {
+					$coursedata[] = [
+						'urn' => $cVal['urn'],
+						'title' => $cVal['title']['value'],
+						'image' => $cVal['details']['images']['primary'],
+						'is_topic_course' => 1,
+						'shortdescription' => $cVal['details']['shortDescription']['value'],
+						'author' => $cVal['details']['contributors'][0]['authorDetails']['firstName']['value']." ".$cVal['details']['contributors'][0]['authorDetails']['lastName']['value'],
+						'language' => $cVal['details']['shortDescription']['locale']['language'],
+						'country' => $cVal['details']['shortDescription']['locale']['country'],
+						'courselevel' => $cVal['details']['level'],
+						'completiontime' => $cVal['details']['timeToComplete']['duration'],
+						'ssolaunchurl' => $cVal['details']['urls']['ssoLaunch'],
+						'weblaunchurl' => $cVal['details']['urls']['webLaunch'],
+						'publishedate' => $cVal['details']['publishedAt'],
+						'lastupdatedat' => $cVal['details']['lastUpdatedAt'],	
+					];
+				}
+				if (count($coursedata) > 0) {
+					$DB->insert_records(self::LINKEDIN_TABLE, $coursedata);
+				}
+				
+			} else {
+				error_log(date("m/d/Y h:i:s")."::No courses tagged with topic urn -> ".$urn."\n", 3, self::LOG_PATH);
+			}
+		} else {
+			error_log(date("m/d/Y h:i:s")."::".$response['message']."\n", 3, self::LOG_PATH);
+		}
+	}
 }
+

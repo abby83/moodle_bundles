@@ -10,6 +10,7 @@
 			<FIELD NAME="urn" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="LinkedIn Learning course URN or namespace to identify course metadata"/>
 			<FIELD NAME="title" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="LinkedIn Learning Course title"/>
 			<FIELD NAME="image" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="LinkedIn Learning Course Image link"/>
+			<FIELD NAME="is_topic_course" TYPE="int" LENGTH="1" NOTNULL="true" />
 			<FIELD NAME="shortdescription" TYPE="text" NOTNULL="false" />
 			<FIELD NAME="author" TYPE="text" NOTNULL="false" />
 			<FIELD NAME="language" TYPE="text" NOTNULL="false" />
